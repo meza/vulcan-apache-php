@@ -1,0 +1,36 @@
+#!/bin/bash
+
+. `pwd`/versions
+
+export VERSION=2.4.7
+export APR_VERSION=1.5.0
+export APR_UTIL_VERSION=1.5.3
+export PCRE_VERSION=8.34
+export BUILD_ROOT=`pwd`;
+export BUILD_DIR=$BUILD_ROOT/httpd-$VERSION
+
+rm -rf pcre-$PCRE_VERSION
+rm -rf httpd-$VERSION
+rm -rf gperf-$GPERF_VERSION
+rm -rf *.tar.gz*
+rm -rf *.tgz
+
+curl -v -k --progress-bar -L -O http://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz
+curl -v -k --progress-bar -L -O ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-$PCRE_VERSION.tar.gz
+curl -v -k --progress-bar -L -O http://mirrors.ukfast.co.uk/sites/ftp.apache.org//httpd/httpd-$VERSION.tar.gz
+curl -v -k --progress-bar -L -O http://mirror.ox.ac.uk/sites/rsync.apache.org//apr/apr-$APR_VERSION.tar.gz
+curl -v -k --progress-bar -L -O http://mirrors.ukfast.co.uk/sites/ftp.apache.org//apr/apr-util-$APR_UTIL_VERSION.tar.gz
+curl -v -k --progress-bar -L -O http://ftp.gnu.org/pub/gnu/gperf/gperf-$GPERF_VERSION.tar.gz
+
+tar -xzvf pcre-$PCRE_VERSION.tar.gz
+tar -xzvf httpd-$VERSION.tar.gz
+tar -xzvf apr-$APR_VERSION.tar.gz
+tar -xzvf apr-util-$APR_UTIL_VERSION.tar.gz
+tar -xzvf Python-$PYTHON_VERSION.tgz
+tar -xzvf gperf-$GPERF_VERSION.tar.gz
+
+mv $BUILD_ROOT/apr-$APR_VERSION $BUILD_DIR/srclib/apr
+mv $BUILD_ROOT/apr-util-$APR_UTIL_VERSION $BUILD_DIR/srclib/apr-util
+
+rm -rf *.tar.gz*
+rm -rf *.tgz
