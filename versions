@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export VERSION=2.4.7
+export APR_VERSION=1.5.0
+export APR_UTIL_VERSION=1.5.3
+export PCRE_VERSION=8.34
+export PYTHON_VERSION=2.6
