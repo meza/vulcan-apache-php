@@ -1,49 +1,33 @@
 #!/bin/bash
 
-vulcan update
+initMPS() {
+    if [ -f bin/depot_tools/gclient ]
+    then
+	cd bin
+	export PATH=$PATH:`pwd`/depot_tools
+	cd depot_tools
+	svn up
+	cd ../..
+    else
+	mkdir bin
+	cd bin
+	svn co http://src.chromium.org/svn/trunk/tools/depot_tools
+	export PATH=$PATH:`pwd`/depot_tools
+	cd ..
+    fi
 
-. `pwd`/versions
+    if [ -f modpagespeed/src/Makefile ]
+    then
+	cd modpagespeed
+	gclient sync --force --jobs=1
+	cd ..
+    else
+	mkdir modpagespeed
+	cd modpagespeed
+	gclient config http://modpagespeed.googlecode.com/svn/trunk/src
+	gclient sync --force --jobs=1
+    fi
+    cd ..
+}
 
-export VERSION=2.4.7
-export APR_VERSION=1.5.0
-export APR_UTIL_VERSION=1.5.3
-export PCRE_VERSION=8.34
-export BUILD_ROOT=`pwd`;
-export BUILD_DIR=$BUILD_ROOT/httpd-$VERSION
-
-rm -rf pcre-$PCRE_VERSION
-rm -rf httpd-$VERSION
-rm -rf apr-$APR_VERSION.tar.rg
-rm -rf *.tar.gz*
-rm -rf *.tgz
-
-wget http://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz
-wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-$PCRE_VERSION.tar.gz
-wget http://mirrors.ukfast.co.uk/sites/ftp.apache.org//httpd/httpd-$VERSION.tar.gz
-wget http://mirror.ox.ac.uk/sites/rsync.apache.org//apr/apr-$APR_VERSION.tar.gz
-wget http://mirrors.ukfast.co.uk/sites/ftp.apache.org//apr/apr-util-$APR_UTIL_VERSION.tar.gz
-
-tar -xzvf pcre-$PCRE_VERSION.tar.gz
-tar -xzvf httpd-$VERSION.tar.gz
-tar -xzvf apr-$APR_VERSION.tar.gz
-tar -xzvf apr-util-$APR_UTIL_VERSION.tar.gz
-tar -xzvf Python-$PYTHON_VERSION.tgz
-
-mv $BUILD_ROOT/apr-$APR_VERSION $BUILD_DIR/srclib/apr
-mv $BUILD_ROOT/apr-util-$APR_UTIL_VERSION $BUILD_DIR/srclib/apr-util
-
-
-#mkdir bin
-#cd bin
-#svn co http://src.chromium.org/svn/trunk/tools/depot_tools
-#export PATH=$PATH:`pwd`/depot_tools
-#cd ..
-
-#mkdir modpagespeed
-#cd modpagespeed
-#gclient config http://modpagespeed.googlecode.com/svn/branches/latest-beta/src
-#gclient sync --force --jobs=1
-#cd ..
-
-rm -rf *.tar.gz*
-rm -rf *.tgz
+initMPS
