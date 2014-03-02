@@ -73,7 +73,7 @@ installGperf() {
 
 installSvn() {
     cd subversion-$SVN_VERSION
-    ./configure --prefix=/app/vendor/svn --with-apr=../httpd-$VERSION/srclib/apr --with--apr-util=../httpd-$VERSION/srclib/apr-util
+    ./configure --prefix=/app/vendor/svn --with-apr=../httpd-$VERSION/srclib/apr --with-apr-util=../httpd-$VERSION/srclib/apr-util
     make
     make install
     cd ..
@@ -86,6 +86,8 @@ modpagespeed() {
     export PATH=$PATH:`pwd`/bin/depot_tools
 
     cd modpagespeed
+    python src/tools/clang/scripts/update.py
+    python src/build/gyp_chromium -Dchromium_revision=161115
     cd src
     make AR.host=`pwd`/build/wrappers/ar.sh AR.target=`pwd`/build/wrappers/ar.sh BUILDTYPE=Release
     cd install
