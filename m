@@ -46,6 +46,10 @@ apache() {
 }
 
 installPython() {
+    #cd ncurses-$NCURSES_VERSION
+    #./configure --prefix=/app/ncurses
+    #make
+    #make install
     cd Python-$PYTHON_VERSION
     ./configure --prefix=/app/python
     make
@@ -69,16 +73,19 @@ modpagespeed() {
 
     cd modpagespeed
     cd src
+    make AR.host=`pwd`/build/wrappers/ar.sh AR.target=`pwd`/build/wrappers/ar.sh BUILDTYPE=Release
+    cd install
     make APACHE_ROOT=/app/comp/apache \
     APACHE_MODULES=/app/comp/apache/modules \
     APACHE_CONTROL_PROGRAM=/etc/init.d/httpd \
     APACHE_USER=daemon \
     APACHE_DOC_ROOT=/app/www \
-    AR.host=`pwd`/build/wrappers/ar.sh AR.target=`pwd`/build/wrappers/ar.sh BUILDTYPE=Release
+    MOD_PAGESPEED_CACHE=/tmp/cache/modpagespeed \
+    MOD_PAGESPEED_LOG=/tmp/log/modpagespeed \
+    staging
     make install
     cd ..
 }
 
 #apache
 modpagespeed
-#installGperf
