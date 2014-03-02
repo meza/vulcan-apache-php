@@ -9,7 +9,7 @@ export BUILD_DIR=$BUILD_ROOT/httpd-$VERSION
 
 pcre() {
     cd pcre-$PCRE_VERSION
-    export PCRE_DIR=/app/pcre
+    export PCRE_DIR=/app/vendor/pcre
     ./configure --prefix=$PCRE_DIR
     make
     make install
@@ -19,7 +19,7 @@ pcre() {
 apache() {
     pcre
     cd httpd-$VERSION
-    ./configure --prefix=/app/comp/apache --with-apr=`pwd`/srclib/apr --with-included-apr --with-pcre=$PCRE_DIR --with-mpm=prefork \
+    ./configure --prefix=/app/apache --with-apr=`pwd`/srclib/apr --with-included-apr --with-pcre=$PCRE_DIR --with-mpm=prefork \
     --disable-charset-lite \
     --disable-include \
     --disable-env \
@@ -46,12 +46,12 @@ apache() {
 }
 
 installPython() {
-    #cd ncurses-$NCURSES_VERSION
-    #./configure --prefix=/app/ncurses
-    #make
-    #make install
+    cd ncurses-$NCURSES_VERSION
+    ./configure --prefix=/app/vendor/ncurses
+    make
+    make install
     cd Python-$PYTHON_VERSION
-    ./configure --prefix=/app/python
+    ./configure --prefix=/app/vendor/python
     make
     make install
     cd ..
@@ -59,10 +59,10 @@ installPython() {
 
 installGperf() {
     cd gperf-$GPERF_VERSION
-    ./configure --prefix=/app/gperf
+    ./configure --prefix=/app/vendor/gperf
     make
     make install
-    export PATH=$PATH:/app/gperf/bin
+    export PATH=$PATH:/app/vendor/gperf/bin
     cd ..
 }
 
@@ -75,17 +75,15 @@ modpagespeed() {
     cd src
     make AR.host=`pwd`/build/wrappers/ar.sh AR.target=`pwd`/build/wrappers/ar.sh BUILDTYPE=Release
     cd install
-    make APACHE_ROOT=/app/comp/apache \
-    APACHE_MODULES=/app/comp/apache/modules \
+    make APACHE_ROOT=/app/apache \
+    APACHE_MODULES=/app/apache/modules \
     APACHE_CONTROL_PROGRAM=/etc/init.d/httpd \
     APACHE_USER=daemon \
     APACHE_DOC_ROOT=/app/www \
-    MOD_PAGESPEED_CACHE=/tmp/cache/modpagespeed \
-    MOD_PAGESPEED_LOG=/tmp/log/modpagespeed \
     staging
     make install
     cd ..
 }
 
-#apache
+apache
 modpagespeed

@@ -25,7 +25,7 @@ echo "Downloading apache-apr $APR_VERSION"
 curl -k --progress-bar -L -O http://mirror.ox.ac.uk/sites/rsync.apache.org//apr/apr-$APR_VERSION.tar.gz
 echo "Downloading apache-apr-util $APR_uTIL_VERSION"
 curl -k --progress-bar -L -O http://mirrors.ukfast.co.uk/sites/ftp.apache.org//apr/apr-util-$APR_UTIL_VERSION.tar.gz
-echo "Downloading gperd $GPERF_VERSION"
+echo "Downloading gperf $GPERF_VERSION"
 curl -k --progress-bar -L -O http://ftp.gnu.org/pub/gnu/gperf/gperf-$GPERF_VERSION.tar.gz
 echo "Downloading ncurses $NCURSES_VERSION"
 curl -k --progress-bar -L -O http://ftp.gnu.org/pub/gnu/ncurses/ncurses-$NCURSES_VERSION.tar.gz
