@@ -45,11 +45,16 @@ apache() {
     cd ..
 }
 
-installPython() {
+installNcurses() {
     cd ncurses-$NCURSES_VERSION
     ./configure --prefix=/app/vendor/ncurses
     make
     make install
+    cd ..
+}
+
+installPython() {
+    installNcurses
     cd Python-$PYTHON_VERSION
     ./configure --prefix=/app/vendor/python
     make
@@ -66,7 +71,16 @@ installGperf() {
     cd ..
 }
 
+installSvn() {
+    cd subversion-$SVN_VERSION
+    ./configure --prefix=/app/vendor/svn --with-apr=../httpd-$VERSION/srclib/apr --with--apr-util=../httpd-$VERSION/srclib/apr-util
+    make
+    make install
+    cd ..
+}
+
 modpagespeed() {
+    installSvn
     installPython
     installGperf
     export PATH=$PATH:`pwd`/bin/depot_tools
@@ -75,12 +89,7 @@ modpagespeed() {
     cd src
     make AR.host=`pwd`/build/wrappers/ar.sh AR.target=`pwd`/build/wrappers/ar.sh BUILDTYPE=Release
     cd install
-    make APACHE_ROOT=/app/apache \
-    APACHE_MODULES=/app/apache/modules \
-    APACHE_CONTROL_PROGRAM=/etc/init.d/httpd \
-    APACHE_USER=daemon \
-    APACHE_DOC_ROOT=/app/www \
-    staging
+    make APACHE_ROOT=/app/apache APACHE_MODULES=/app/apache/modules APACHE_CONTROL_PROGRAM=/etc/init.d/httpd APACHE_USER=daemon APACHE_DOC_ROOT=/app/www staging
     make install
     cd ..
 }
