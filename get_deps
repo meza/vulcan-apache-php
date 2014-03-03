@@ -2,10 +2,6 @@
 
 . `pwd`/versions
 
-export VERSION=2.4.7
-export APR_VERSION=1.5.0
-export APR_UTIL_VERSION=1.5.3
-export PCRE_VERSION=8.34
 export BUILD_ROOT=`pwd`;
 export BUILD_DIR=$BUILD_ROOT/httpd-$VERSION
 
@@ -29,8 +25,6 @@ echo "Downloading gperf $GPERF_VERSION"
 curl -k --progress-bar -L -O http://ftp.gnu.org/pub/gnu/gperf/gperf-$GPERF_VERSION.tar.gz
 echo "Downloading ncurses $NCURSES_VERSION"
 curl -k --progress-bar -L -O http://ftp.gnu.org/pub/gnu/ncurses/ncurses-$NCURSES_VERSION.tar.gz
-echo "Downloading SVN $SVN_VERSION"
-curl -k --progress-bar -L -O http://apache.mirrors.timporter.net/subversion/subversion-$SVN_VERSION.tar.gz
 
 tar -xzvf pcre-$PCRE_VERSION.tar.gz
 tar -xzvf httpd-$VERSION.tar.gz
@@ -39,7 +33,7 @@ tar -xzvf apr-util-$APR_UTIL_VERSION.tar.gz
 tar -xzvf Python-$PYTHON_VERSION.tgz
 tar -xzvf gperf-$GPERF_VERSION.tar.gz
 tar -xzvf ncurses-$NCURSES_VERSION.tar.gz
-tar -xzvf subversion-$SVN_VERSION.tar.gz
+
 mv $BUILD_ROOT/apr-$APR_VERSION $BUILD_DIR/srclib/apr
 mv $BUILD_ROOT/apr-util-$APR_UTIL_VERSION $BUILD_DIR/srclib/apr-util
 

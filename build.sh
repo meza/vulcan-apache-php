@@ -1,5 +1,6 @@
 #!/bin/bash
 
 vulcan update
-./download
-vulcan build -v -p /app -o "$PWD"/binaries.tgz -s . -c "sh m"
+sh ./get_deps
+vulcan build -v -p /app -o "$PWD"/package.tgz -s . -c "sh vulcan_build"
+#> ../output.log 2> ../error.log

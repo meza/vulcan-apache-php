@@ -2,7 +2,9 @@
 
 . `pwd`/versions
 
-sh ./dl
+mkdir -p /app/vendor
+
+sh ./get_deps
 
 export BUILD_ROOT=`pwd`;
 export BUILD_DIR=$BUILD_ROOT/httpd-$VERSION
@@ -42,6 +44,7 @@ apache() {
 
     make
     make install
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/app/apache/lib
     cd ..
 }
 
@@ -71,16 +74,7 @@ installGperf() {
     cd ..
 }
 
-installSvn() {
-    cd subversion-$SVN_VERSION
-    ./configure --prefix=/app/vendor/svn --with-apr=../httpd-$VERSION/srclib/apr --with-apr-util=../httpd-$VERSION/srclib/apr-util
-    make
-    make install
-    cd ..
-}
-
 modpagespeed() {
-    installSvn
     installPython
     installGperf
     export PATH=$PATH:`pwd`/bin/depot_tools
@@ -91,8 +85,9 @@ modpagespeed() {
     cd src
     make AR.host=`pwd`/build/wrappers/ar.sh AR.target=`pwd`/build/wrappers/ar.sh BUILDTYPE=Release
     cd install
-    make APACHE_ROOT=/app/apache APACHE_MODULES=/app/apache/modules APACHE_CONTROL_PROGRAM=/etc/init.d/httpd APACHE_USER=daemon APACHE_DOC_ROOT=/app/www staging
-    make install
+    APXS_BIN=/app/apache/bin/apxs ./install_apxs.sh
+    #make APACHE_ROOT=/app/apache APACHE_MODULES=/app/apache/modules APACHE_CONTROL_PROGRAM=/etc/init.d/httpd APACHE_USER=daemon APACHE_DOC_ROOT=/app/www staging
+    #make install
     cd ..
 }
 
