@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export VERSION=2.4.7
+export PHP_VERSION=5.5.9
 export APR_VERSION=1.5.0
 export APR_UTIL_VERSION=1.5.3
 export PCRE_VERSION=8.34

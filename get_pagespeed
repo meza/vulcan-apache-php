@@ -28,6 +28,5 @@ initMPS() {
 	gclient sync --force --jobs=1
     fi
     cd ..
-    mv -f Makefile modpagespeed/src/install
 }
 initMPS
