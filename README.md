@@ -19,4 +19,4 @@ vulcan create <your_builder_nodes_name>
 ./build.sh
 ```
 
-sit back and watch the compilation :)
+sit back and watch the compilation - takes about 40 minutes due to the lightning speed of a vulcan node :)
