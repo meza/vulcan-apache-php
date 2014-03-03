@@ -2,8 +2,6 @@
 
 In order to acquire mod_pagespeed, you need svn and git too.
 
-## Usage
-
 ```
 gem install vulcan
 ```
@@ -11,6 +9,9 @@ gem install vulcan
 ```
 vulcan create <your_builder_nodes_name>
 ```
+
+
+## Usage
 
 ```
 ./build.sh
