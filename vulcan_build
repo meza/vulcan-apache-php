@@ -113,8 +113,7 @@ php() {
     cd ..
     
     /app/php/bin/pecl install mongo
-    /app/php/bin/pecl install apc
-    
+    chmod 755 /app/php/lib/php/extensions/no-debug-non-zts-20121212/mongo.so
 }
 
 apache
