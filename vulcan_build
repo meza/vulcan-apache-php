@@ -25,7 +25,6 @@ apache() {
     --with-suexec-docroot=/app/www \
     --disable-charset-lite \
     --disable-include \
-    --disable-env \
     --disable-setenvif \
     --disable-status \
     --disable-autoindex \
@@ -36,12 +35,14 @@ apache() {
     --disable-actions \
     --disable-userdir \
     --disable-alias \
+    --enable-env \
     --enable-mods-shared \
     --enable-deflate \
     --enable-expies \
     --enable-rewrite \
     --enable-ssl \
-    --enable-vhost-alias
+    --enable-vhost-alias \
+    --enable-modules='unixd access_compat filter env deflate rewrite auth_basic'
 
     make
     make install
@@ -90,12 +91,13 @@ modpagespeed() {
     #APXS_BIN=/app/apache/bin/apxs ./install_apxs.sh
     make APACHE_ROOT=/app/apache APACHE_MODULES=/app/apache/modules APACHE_CONTROL_PROGRAM=/etc/init.d/httpd APACHE_USER=daemon APACHE_DOC_ROOT=/app/www staging
     make install
-    cd ../..
+    cd ../../..
 }
 
 php() {
     cd php-$PHP_VERSION
-    ./configure --prefix=/app/php --bindir=/app/bin --with-apxs2=/app/apache/bin/apxs --with-apache=/app/apache/include/ \
+    ./configure --prefix=/app/php --with-apxs2=/app/apache/bin/apxs \
+    --with-config-file-scan-dir=/app/www/.php \
     --with-mpm=worker \
     --with-bz2 \
     --with-curl \
@@ -109,8 +111,12 @@ php() {
     make
     make install
     cd ..
+    
+    /app/php/bin/pecl install mongo
+    /app/php/bin/pecl install apc
+    
 }
 
 apache
-#php
-modpagespeed
+#modpagespeed
+php
