@@ -1,15 +1,27 @@
 #!/bin/bash
 
+export BUILD_ROOT=`pwd`;
+
+
 . `pwd`/versions
 
 mkdir -p /app/vendor
 
-sh ./get_deps
 
 export BUILD_ROOT=`pwd`;
-export BUILD_DIR=$BUILD_ROOT/httpd-$VERSION
+export BUILD_DIR=$BUILD_ROOT/httpd-$HTTPD_VERSION
+
+clean() {
+    rm -rf *.tar.gz*
+    rm -rf *.tgz
+}
 
 pcre() {
+    rm -rf pcre-$PCRE_VERSION
+    echo "Downloading pcre $PCRE_VERSION"
+    curl -k --progress-bar -L -O ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-$PCRE_VERSION.tar.gz
+    tar -xzvf pcre-$PCRE_VERSION.tar.gz
+    
     cd pcre-$PCRE_VERSION
     export PCRE_DIR=/app/vendor/pcre
     ./configure --prefix=$PCRE_DIR
@@ -20,7 +32,22 @@ pcre() {
 
 apache() {
     pcre
-    cd httpd-$VERSION
+    rm -rf httpd-$HTTPD_VERSION
+    echo "Downloading apache $VERSION"
+    curl -k --progress-bar -L -O http://mirrors.ukfast.co.uk/sites/ftp.apache.org//httpd/httpd-$HTTPD_VERSION.tar.gz
+    echo "Downloading apache-apr $APR_VERSION"
+    curl -k --progress-bar -L -O http://mirror.ox.ac.uk/sites/rsync.apache.org//apr/apr-$APR_VERSION.tar.gz
+    echo "Downloading apache-apr-util $APR_UTIL_VERSION"
+    curl -k --progress-bar -L -O http://mirrors.ukfast.co.uk/sites/ftp.apache.org//apr/apr-util-$APR_UTIL_VERSION.tar.gz
+    
+    tar -xzvf httpd-$HTTPD_VERSION.tar.gz
+    tar -xzvf apr-$APR_VERSION.tar.gz
+    tar -xzvf apr-util-$APR_UTIL_VERSION.tar.gz
+    
+    mv $BUILD_ROOT/apr-$APR_VERSION $BUILD_ROOT/httpd-$HTTPD_VERSION/srclib/apr
+    mv $BUILD_ROOT/apr-util-$APR_UTIL_VERSION $BUILD_ROOT/httpd-$HTTPD_VERSION/srclib/apr-util
+    
+    cd httpd-$HTTPD_VERSION
     ./configure --prefix=/app/apache --with-apr=`pwd`/srclib/apr --with-included-apr --with-pcre=$PCRE_DIR --with-mpm=prefork \
     --with-suexec-docroot=/app/www \
     --disable-charset-lite \
@@ -52,6 +79,11 @@ apache() {
 }
 
 installNcurses() {
+
+    echo "Downloading ncurses $NCURSES_VERSION"
+    curl -k --progress-bar -L -O http://ftp.gnu.org/pub/gnu/ncurses/ncurses-$NCURSES_VERSION.tar.gz
+    tar -xzvf ncurses-$NCURSES_VERSION.tar.gz
+
     cd ncurses-$NCURSES_VERSION
     ./configure --prefix=/app/vendor/ncurses
     make
@@ -61,6 +93,11 @@ installNcurses() {
 
 installPython() {
     installNcurses
+    
+    echo "Downloading python $PYTHON_VERSION"
+    curl -k --progress-bar -L -O http://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz   
+    tar -xzvf Python-$PYTHON_VERSION.tgz
+    
     cd Python-$PYTHON_VERSION
     ./configure --prefix=/app/vendor/python
     make
@@ -69,6 +106,10 @@ installPython() {
 }
 
 installGperf() {
+    echo "Downloading gperf $GPERF_VERSION"
+    curl -k --progress-bar -L -O http://ftp.gnu.org/pub/gnu/gperf/gperf-$GPERF_VERSION.tar.gz
+    tar -xzvf gperf-$GPERF_VERSION.tar.gz
+    
     cd gperf-$GPERF_VERSION
     ./configure --prefix=/app/vendor/gperf
     make
@@ -95,6 +136,10 @@ modpagespeed() {
 }
 
 php() {
+    rm -rf php-$PHP_VERSION
+    echo "Downloading php $PHP_VERSION"
+    curl -k --progress-bar -L -o php-$PHP_VERSION.tar.gz http://uk1.php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror
+    tar -xzvf php-$PHP_VERSION.tar.gz
     cd php-$PHP_VERSION
     ./configure --prefix=/app/php --with-apxs2=/app/apache/bin/apxs \
     --with-config-file-scan-dir=/app/www/.php \
@@ -116,6 +161,31 @@ php() {
     chmod 755 /app/php/lib/php/extensions/no-debug-non-zts-20121212/mongo.so
 }
 
+node() {
+	rm -rf node-v$NODE_VERSION
+	echo "Downloading node $NODE_VERSION"
+	curl -k --progress-bar -L -O http://nodejs.org/dist/v0.10.26/node-v$NODE_VERSION.tar.gz
+	
+	tar -xzvf node-v$NODE_VERSION.tar.gz
+	cd node-v$NODE_VERSION
+	./configure --prefix=/app/node
+	make
+	make install
+	cd ..
+	/app/node/bin/npm install -g grunt \
+	grunt-cli \
+	sass \
+	yuicompressor \
+	sqwish \
+	node-minify
+
+}
+
+clean
+
 apache
 #modpagespeed
 php
+node
+
+clean
