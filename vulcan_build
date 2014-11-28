@@ -2,10 +2,10 @@
 
 export BUILD_ROOT=`pwd`;
 
-export HTTPD_VERSION=2.4.7
+export HTTPD_VERSION=2.4.10
 export PHP_VERSION=5.5.9
-export APR_VERSION=1.5.0
-export APR_UTIL_VERSION=1.5.3
+export APR_VERSION=1.5.1
+export APR_UTIL_VERSION=1.5.4
 export PCRE_VERSION=8.34
 export PYTHON_VERSION=2.7.5
 export GPERF_VERSION=3.0.4
@@ -86,6 +86,7 @@ apache() {
 }
 
 openssl() {
+    cd BUILD_ROOT
 	curl -k --progress-bar -L -O http://www.openssl.org/source/openssl-1.0.1j.tar.gz
 	curl -k --progress-bar -L -O http://www.linuxfromscratch.org/patches/blfs/svn/openssl-1.0.1j-fix_parallel_build-1.patch
 	tar -xzvf openssl-1.0.1j.tar.gz
@@ -98,10 +99,10 @@ openssl() {
 	install -dv -m755 /usr/share/doc/openssl-1.0.1j
 	cp -vfr doc/*     /usr/share/doc/openssl-1.0.1j
 	popd
-
 }
 
 php() {
+    cd BUILD_ROOT
     rm -rf php-$PHP_VERSION
     echo "Downloading php $PHP_VERSION"
     curl -k --progress-bar -L -o php-$PHP_VERSION.tar.gz http://uk1.php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror
@@ -129,6 +130,7 @@ php() {
 }
 
 node() {
+    cd BUILD_ROOT
 	rm -rf node-v$NODE_VERSION
 	echo "Downloading node $NODE_VERSION"
 	curl -k --progress-bar -L -O http://nodejs.org/dist/v0.10.26/node-v$NODE_VERSION.tar.gz
