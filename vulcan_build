@@ -25,7 +25,7 @@ clean() {
 
 pcre() {
     rm -rf pcre-$PCRE_VERSION
-    echo "Downloading pcre $PCRE_VERSION"
+    echo "Downloading pcre $PCRE VERSION"
     curl -k --progress-bar -L -O ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-$PCRE_VERSION.tar.gz
     tar -xzvf pcre-$PCRE_VERSION.tar.gz
 
@@ -86,23 +86,21 @@ apache() {
 }
 
 openssl() {
-    cd BUILD_ROOT
+    cd $BUILD_ROOT
 	curl -k --progress-bar -L -O http://www.openssl.org/source/openssl-1.0.1j.tar.gz
 	curl -k --progress-bar -L -O http://www.linuxfromscratch.org/patches/blfs/svn/openssl-1.0.1j-fix_parallel_build-1.patch
 	tar -xzvf openssl-1.0.1j.tar.gz
 	pushd .
 	cd openssl-1.0.1j
 	patch -Np1 -i ../openssl-1.0.1j-fix_parallel_build-1.patch
-	./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib shared zlib-dynamic
+	./config --prefix=/app/vendor/ssl --openssldir=/etc/ssl --libdir=lib shared zlib-dynamic
 	make
-	make MANDIR=/usr/share/man MANSUFFIX=ssl install
-	install -dv -m755 /usr/share/doc/openssl-1.0.1j
-	cp -vfr doc/*     /usr/share/doc/openssl-1.0.1j
+	make install
 	popd
 }
 
 php() {
-    cd BUILD_ROOT
+    cd $BUILD_ROOT
     rm -rf php-$PHP_VERSION
     echo "Downloading php $PHP_VERSION"
     curl -k --progress-bar -L -o php-$PHP_VERSION.tar.gz http://uk1.php.net/get/php-$PHP_VERSION.tar.gz/from/this/mirror
@@ -113,7 +111,7 @@ php() {
     --with-mpm=worker \
     --with-bz2 \
     --with-curl \
-    --with-openssl=/etc/ssl \
+    --with-openssl=/app/vendor/ssl \
     --with-zlib-dir \
     --with-zlib \
     --with-pcre-regex=/app/vendor/pcre \
@@ -130,7 +128,7 @@ php() {
 }
 
 node() {
-    cd BUILD_ROOT
+    cd $BUILD_ROOT
 	rm -rf node-v$NODE_VERSION
 	echo "Downloading node $NODE_VERSION"
 	curl -k --progress-bar -L -O http://nodejs.org/dist/v0.10.26/node-v$NODE_VERSION.tar.gz
@@ -153,8 +151,8 @@ node() {
 clean
 
 apache
-openssl
-php
-node
+#openssl
+#php
+#node
 
 clean
