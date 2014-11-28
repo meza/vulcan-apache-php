@@ -123,8 +123,8 @@ php() {
     make install
     cd ..
 
-#    /app/php/bin/pecl install mongo
-#    chmod 755 /app/php/lib/php/extensions/no-debug-non-zts-20121212/mongo.so
+    yes "" | /app/php/bin/pecl install mongo
+    chmod 755 /app/php/lib/php/extensions/no-debug-non-zts-20121212/mongo.so
 }
 
 node() {
