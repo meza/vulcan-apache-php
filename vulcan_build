@@ -2,8 +2,15 @@
 
 export BUILD_ROOT=`pwd`;
 
-
-. `pwd`/versions
+export HTTPD_VERSION=2.4.7
+export PHP_VERSION=5.5.9
+export APR_VERSION=1.5.0
+export APR_UTIL_VERSION=1.5.3
+export PCRE_VERSION=8.34
+export PYTHON_VERSION=2.7.5
+export GPERF_VERSION=3.0.4
+export NCURSES_VERSION=5.9
+export NODE_VERSION=0.10.26
 
 mkdir -p /app/vendor
 
@@ -21,7 +28,7 @@ pcre() {
     echo "Downloading pcre $PCRE_VERSION"
     curl -k --progress-bar -L -O ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-$PCRE_VERSION.tar.gz
     tar -xzvf pcre-$PCRE_VERSION.tar.gz
-    
+
     cd pcre-$PCRE_VERSION
     export PCRE_DIR=/app/vendor/pcre
     ./configure --prefix=$PCRE_DIR
@@ -39,14 +46,14 @@ apache() {
     curl -k --progress-bar -L -O http://mirror.ox.ac.uk/sites/rsync.apache.org//apr/apr-$APR_VERSION.tar.gz
     echo "Downloading apache-apr-util $APR_UTIL_VERSION"
     curl -k --progress-bar -L -O http://mirrors.ukfast.co.uk/sites/ftp.apache.org//apr/apr-util-$APR_UTIL_VERSION.tar.gz
-    
+
     tar -xzvf httpd-$HTTPD_VERSION.tar.gz
     tar -xzvf apr-$APR_VERSION.tar.gz
     tar -xzvf apr-util-$APR_UTIL_VERSION.tar.gz
-    
+
     mv $BUILD_ROOT/apr-$APR_VERSION $BUILD_ROOT/httpd-$HTTPD_VERSION/srclib/apr
     mv $BUILD_ROOT/apr-util-$APR_UTIL_VERSION $BUILD_ROOT/httpd-$HTTPD_VERSION/srclib/apr-util
-    
+
     cd httpd-$HTTPD_VERSION
     ./configure --prefix=/app/apache --with-apr=`pwd`/srclib/apr --with-included-apr --with-pcre=$PCRE_DIR --with-mpm=prefork \
     --with-suexec-docroot=/app/www \
@@ -78,61 +85,20 @@ apache() {
     mkdir /app/www
 }
 
-installNcurses() {
+openssl() {
+	curl -k --progress-bar -L -O http://www.openssl.org/source/openssl-1.0.1j.tar.gz
+	curl -k --progress-bar -L -O http://www.linuxfromscratch.org/patches/blfs/svn/openssl-1.0.1j-fix_parallel_build-1.patch
+	tar -xzvf openssl-1.0.1j.tar.gz
+	pushd .
+	cd openssl-1.0.1j
+	patch -Np1 -i ../openssl-1.0.1j-fix_parallel_build-1.patch
+	./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib shared zlib-dynamic
+	make
+	make MANDIR=/usr/share/man MANSUFFIX=ssl install
+	install -dv -m755 /usr/share/doc/openssl-1.0.1j
+	cp -vfr doc/*     /usr/share/doc/openssl-1.0.1j
+	popd
 
-    echo "Downloading ncurses $NCURSES_VERSION"
-    curl -k --progress-bar -L -O http://ftp.gnu.org/pub/gnu/ncurses/ncurses-$NCURSES_VERSION.tar.gz
-    tar -xzvf ncurses-$NCURSES_VERSION.tar.gz
-
-    cd ncurses-$NCURSES_VERSION
-    ./configure --prefix=/app/vendor/ncurses
-    make
-    make install
-    cd ..
-}
-
-installPython() {
-    installNcurses
-    
-    echo "Downloading python $PYTHON_VERSION"
-    curl -k --progress-bar -L -O http://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz   
-    tar -xzvf Python-$PYTHON_VERSION.tgz
-    
-    cd Python-$PYTHON_VERSION
-    ./configure --prefix=/app/vendor/python
-    make
-    make install
-    cd ..
-}
-
-installGperf() {
-    echo "Downloading gperf $GPERF_VERSION"
-    curl -k --progress-bar -L -O http://ftp.gnu.org/pub/gnu/gperf/gperf-$GPERF_VERSION.tar.gz
-    tar -xzvf gperf-$GPERF_VERSION.tar.gz
-    
-    cd gperf-$GPERF_VERSION
-    ./configure --prefix=/app/vendor/gperf
-    make
-    make install
-    export PATH=$PATH:/app/vendor/gperf/bin
-    cd ..
-}
-
-modpagespeed() {
-    installPython
-    installGperf
-    export PATH=$PATH:`pwd`/bin/depot_tools
-
-    cd modpagespeed
-    python src/tools/clang/scripts/update.py
-    python src/build/gyp_chromium -Dchromium_revision=161115
-    cd src
-    make AR.host=`pwd`/build/wrappers/ar.sh AR.target=`pwd`/build/wrappers/ar.sh BUILDTYPE=Release
-    cd install
-    #APXS_BIN=/app/apache/bin/apxs ./install_apxs.sh
-    make APACHE_ROOT=/app/apache APACHE_MODULES=/app/apache/modules APACHE_CONTROL_PROGRAM=/etc/init.d/httpd APACHE_USER=daemon APACHE_DOC_ROOT=/app/www staging
-    make install
-    cd ../../..
 }
 
 php() {
@@ -146,6 +112,7 @@ php() {
     --with-mpm=worker \
     --with-bz2 \
     --with-curl \
+    --with-openssl=/etc/ssl \
     --with-zlib-dir \
     --with-zlib \
     --with-pcre-regex=/app/vendor/pcre \
@@ -156,7 +123,7 @@ php() {
     make
     make install
     cd ..
-    
+
     /app/php/bin/pecl install mongo
     chmod 755 /app/php/lib/php/extensions/no-debug-non-zts-20121212/mongo.so
 }
@@ -165,7 +132,7 @@ node() {
 	rm -rf node-v$NODE_VERSION
 	echo "Downloading node $NODE_VERSION"
 	curl -k --progress-bar -L -O http://nodejs.org/dist/v0.10.26/node-v$NODE_VERSION.tar.gz
-	
+
 	tar -xzvf node-v$NODE_VERSION.tar.gz
 	cd node-v$NODE_VERSION
 	./configure --prefix=/app/node
@@ -184,7 +151,7 @@ node() {
 clean
 
 apache
-#modpagespeed
+openssl
 php
 node
 
