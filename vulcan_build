@@ -3,7 +3,7 @@
 export BUILD_ROOT=`pwd`;
 
 export HTTPD_VERSION=2.4.10
-export PHP_VERSION=5.5.9
+export PHP_VERSION=5.5.14
 export APR_VERSION=1.5.1
 export APR_UTIL_VERSION=1.5.4
 export PCRE_VERSION=8.34
@@ -123,8 +123,8 @@ php() {
     make install
     cd ..
 
-    /app/php/bin/pecl install mongo
-    chmod 755 /app/php/lib/php/extensions/no-debug-non-zts-20121212/mongo.so
+#    /app/php/bin/pecl install mongo
+#    chmod 755 /app/php/lib/php/extensions/no-debug-non-zts-20121212/mongo.so
 }
 
 node() {
@@ -155,7 +155,7 @@ openssl
 php
 node
 
-cd $BUILD_DIR
+cd $BUILD_ROOT
 tar -czvf package.tar.gz apache/ vendor/ php/
 curl -k --progress-bar -L -O https://raw.githubusercontent.com/scottmotte/srvdir-binary/master/srvdir.tar.gz
 tar -zxvf srvdir.tar.gz
