@@ -150,9 +150,9 @@ node() {
 
 clean
 
-apache
-#openssl
-#php
+#apache
+openssl
+php
 #node
 
 clean
