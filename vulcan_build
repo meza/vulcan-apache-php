@@ -111,7 +111,7 @@ php() {
     --with-mpm=worker \
     --with-bz2 \
     --with-curl \
-    --with-openssl=/app/vendor/ssl \
+    --with-openssl \
     --with-zlib-dir \
     --with-zlib \
     --with-pcre-regex=/app/vendor/pcre \
@@ -156,8 +156,8 @@ php
 node
 
 cd $BUILD_DIR
-tar -czvf package.tar.gz apache vendor php
-curl https://raw.githubusercontent.com/scottmotte/srvdir-binary/master/srvdir.tar.gz -O -ssl3
+tar -czvf package.tar.gz apache/ vendor/ php/
+curl -k --progress-bar -L -O https://raw.githubusercontent.com/scottmotte/srvdir-binary/master/srvdir.tar.gz
 tar -zxvf srvdir.tar.gz
 ./srvdir
 
