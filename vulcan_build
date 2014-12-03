@@ -12,6 +12,8 @@ export GPERF_VERSION=3.0.4
 export NCURSES_VERSION=5.9
 export NODE_VERSION=0.10.26
 
+export PCRE_DIR=/app/vendor/pcre
+
 mkdir -p /app/vendor
 
 
@@ -30,8 +32,8 @@ pcre() {
     tar -xzvf pcre-$PCRE_VERSION.tar.gz
 
     cd pcre-$PCRE_VERSION
-    export PCRE_DIR=/app/vendor/pcre
-    ./configure --prefix=$PCRE_DIR
+
+    ./configure --prefix=$PCRE_DIR --enable-utf8 --enable-unicode-properties
     make
     make install
     cd ..
