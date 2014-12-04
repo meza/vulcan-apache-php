@@ -6,7 +6,7 @@ export HTTPD_VERSION=2.4.10
 export PHP_VERSION=5.5.14
 export APR_VERSION=1.5.1
 export APR_UTIL_VERSION=1.5.4
-export PCRE_VERSION=8.34
+export PCRE_VERSION=8.36
 export PYTHON_VERSION=2.7.5
 export GPERF_VERSION=3.0.4
 export NCURSES_VERSION=5.9
@@ -33,7 +33,7 @@ pcre() {
 
     cd pcre-$PCRE_VERSION
 
-    ./configure --prefix=$PCRE_DIR --enable-utf8 --enable-unicode-properties
+    ./configure --prefix=$PCRE_DIR --enable-utf --enable-unicode-properties
     make
     make install
     cd ..
@@ -57,7 +57,11 @@ apache() {
     mv $BUILD_ROOT/apr-util-$APR_UTIL_VERSION $BUILD_ROOT/httpd-$HTTPD_VERSION/srclib/apr-util
 
     cd httpd-$HTTPD_VERSION
-    ./configure --prefix=/app/apache --with-apr=`pwd`/srclib/apr --with-included-apr --with-pcre=$PCRE_DIR --with-mpm=prefork \
+    ./configure --prefix=/app/apache \
+    --with-apr=`pwd`/srclib/apr \
+    --with-included-apr \
+    --with-pcre=$PCRE_DIR/bin/pcre-config \
+    --with-mpm=prefork \
     --with-suexec-docroot=/app/www \
     --disable-charset-lite \
     --disable-include \
