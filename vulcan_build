@@ -105,7 +105,19 @@ openssl() {
 	popd
 }
 
+libgd() {
+	pushd .
+	curl -k --progress-bar -L -O https://bitbucket.org/libgd/gd-libgd/downloads/libgd-2.1.0.tar.gz
+	tar -xzvf libgd-2.1.0.tar.gz
+	cd libgd-2.1.0
+	./configure --prefix=/app/vendor/libgd
+	make
+	make install
+	popd
+}
+
 php() {
+	libgd
     cd $BUILD_ROOT
     rm -rf php-$PHP_VERSION
     echo "Downloading php $PHP_VERSION"
@@ -121,6 +133,7 @@ php() {
     --with-zlib-dir \
     --with-zlib \
     --with-pcre-regex=/app/vendor/pcre \
+    --with-gd=/app/vendor/libgd \
     --without-sqlite \
     --without-mysql \
     --enable-opcache \
@@ -154,15 +167,16 @@ node() {
 
 }
 
-clean
+#clean
 
-apache
-openssl
+#apache
+#openssl
 php
-node
+#node
 
 cd $BUILD_ROOT
-tar -czvf package.tar.gz apache/ vendor/ php/
+tar -czvf package.tar.gz php/
+#tar -czvf package.tar.gz apache/ vendor/ php/
 curl -k --progress-bar -L -O https://raw.githubusercontent.com/scottmotte/srvdir-binary/master/srvdir.tar.gz
 tar -zxvf srvdir.tar.gz
 ./srvdir
